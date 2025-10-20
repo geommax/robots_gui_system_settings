@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(system_settings LANGUAGES CXX)
 
-set(CMAKE_AUTORCC ON)
-
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Gui Widgets)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
 
 qt_standard_project_setup()
 
@@ -20,9 +18,8 @@ qt_add_executable(system_settings
 
 target_link_libraries(system_settings
     PRIVATE
-        Qt::Core
-    Qt::Gui
-        Qt::Widgets
+    Qt::Core
+    Qt::Widgets
 )
 
 include(GNUInstallDirs)
