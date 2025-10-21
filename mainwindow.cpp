@@ -18,29 +18,34 @@ MainWindow::~MainWindow()
 
 void MainWindow::attachAllBtnsToPressAnimation()
 {
-    struct ButtonInfo {
-        QPushButton* btn;
-        QString originalStyle;
-    };
-    QList<ButtonInfo> buttons = {
-        {ui->basicSettingBtn, ui->basicSettingBtn->styleSheet()},
-        {ui->languageSettingBtn, ui->languageSettingBtn->styleSheet()},
-        {ui->distributionModeBtn, ui->distributionModeBtn->styleSheet()},
-        {ui->advertisingSettingBtn, ui->advertisingSettingBtn->styleSheet()},
-        {ui->versionSettingBtn, ui->versionSettingBtn->styleSheet()},
-        {ui->networkSettingBtn, ui->networkSettingBtn->styleSheet()},
+    // Build a simple navigation button list
+    QList<QPushButton*> navButtons = {
+        ui->basicSettingBtn,
+        ui->languageSettingBtn,
+        ui->distributionModeBtn,
+        ui->advertisingSettingBtn,
+        ui->versionSettingBtn,
+        ui->networkSettingBtn,
     };
 
-    for (const ButtonInfo& info : buttons) {
-        if (!info.btn) continue;
-
-        connect(info.btn, &QPushButton::pressed, this, [btn=info.btn]() {
-            btn->setStyleSheet(BUTTON_PRESSED_STYLE);
+    // Connect each button's clicked signal to update the selected visual state
+    for (QPushButton* b : navButtons) {
+        if (!b) continue;
+        // capture a copy of the list so the lambda can iterate it safely
+        QList<QPushButton*> copy = navButtons;
+        connect(b, &QPushButton::clicked, this, [b, copy]() {
+            for (QPushButton* other : copy) {
+                if (!other) continue;
+                if (other == b) other->setStyleSheet(BUTTON_PRESSED_STYLE);
+                else other->setStyleSheet(BUTTON_RELEASED_STYLE);
+            }
         });
+    }
 
-        connect(info.btn, &QPushButton::released, this, [btn=info.btn]() {
-            btn->setStyleSheet(BUTTON_RELEASED_STYLE);
-        });
+    // Set a sensible initial selection: basic settings
+    if (ui->basicSettingBtn) {
+        for (QPushButton* other : navButtons) if (other) other->setStyleSheet(BUTTON_RELEASED_STYLE);
+        ui->basicSettingBtn->setStyleSheet(BUTTON_PRESSED_STYLE);
     }
 }
 
